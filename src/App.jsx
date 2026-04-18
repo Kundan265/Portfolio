@@ -107,7 +107,6 @@ export default function Home() {
         'Documented technical findings and presented recommendations to engineering team.',
       ],
       tags: ['Power Systems', 'Data Analysis', 'Engineering'],
-      icon: <Wrench className="w-6 h-6" />,
     },
     {
       Project: 'Rutgers – New Brunswick Laureate Program',
