@@ -107,13 +107,14 @@ export default function Home() {
         'Documented technical findings and presented recommendations to engineering team.',
       ],
       tags: ['Power Systems', 'Data Analysis', 'Engineering'],
+      icon: <Cpu className="w-6 h-6" />,
     },
     {
-      Project: 'Rutgers – New Brunswick Laureate Program',
+      company: 'Rutgers – New Brunswick Laureate Program',
       role: 'AI Data Engineer',
       period: 'Dec 2025 – Mar 2026',
       status: 'Completed',
-      desc: 'An interdisciplinary art and science project bringing “botanical ghosts” back into cultural consciousness through critical design.',
+      desc: 'An interdisciplinary art and science project bringing "botanical ghosts" back into cultural consciousness through critical design.',
       contributions: [
         'Co-designed and developed a dedicated digital platform to highlight the Chrysler Herbarium, expanding public recognition of archival botanical work.',
         'Translated complex ecological loss and scientific data into accessible visual narratives using critical and speculative design frameworks.',
