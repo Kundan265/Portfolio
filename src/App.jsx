@@ -1,739 +1,177 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import Canvas from 'react-webgl-fluid-play';
-import {
-  Github,
-  Linkedin,
-  Mail,
-  FileText,
-  ExternalLink,
-  Code,
-  Database,
-  Terminal,
-  Cpu,
-  Server,
-  Layers,
-  Monitor,
-  X,
-  Copy,
-  Check,
-  ChevronDown,
-  MapPin,
-  Phone,
-  ArrowDown,
-  Menu,
-  Download,
-} from 'lucide-react';
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 60 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' },
-  }),
-};
-
-export default function Home() {
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [expandedExp, setExpandedExp] = useState(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll();
-  const navBg = useTransform(scrollYProgress, [0, 0.05], ['rgba(255,255,255,0)', 'rgba(255,255,255,0.95)']);
-
+import { useEffect, useRef, useState } from 'react';
+import { Github, Linkedin, Menu, X, Download, Pause, Play, Cpu, Database, CircuitBoard, Mail } from 'lucide-react';
+import { experience, projects, skills } from './data';
+import ProjectVisual from './ProjectVisual';
+import SignalLab from './SignalLab';
+function SignalField({
+  paused
+}) {
+  const ref = useRef(null);
   useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+    const canvas = ref.current,
+      ctx = canvas.getContext('2d');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let width,
+      height,
+      frame,
+      time = 0,
+      isVisible = true,
+      pointer = {
+        x: -1000,
+        y: -1000
+      };
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileMenuOpen]);
-
-  const handleCopyEmail = () => {
-    const email = 'kundan.k@rutgers.edu';
-    const textArea = document.createElement('textarea');
-    textArea.value = email;
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-      document.execCommand('copy');
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy', err);
+    function move(e) {
+      const r = canvas.getBoundingClientRect();
+      pointer = {
+        x: e.clientX - r.left,
+        y: e.clientY - r.top
+      };
     }
-    document.body.removeChild(textArea);
-  };
-
-  const navItems = ['About', 'Experience', 'Skills', 'Projects', 'Contact'];
-
-  const experience = [
-    {
-      company: 'Bank of America',
-      role: 'Data Engineer',
-      period: 'Sept 2022 – Aug 2025',
-      status: 'Completed',
-      desc: 'Engineered data archiving lifecycles using IBM Infosphere. Administered enterprise SQL/Oracle databases for high-volume transactions.',
-      contributions: [
-        'Engineered data archiving lifecycles using IBM Infosphere for enterprise-scale data management and compliance.',
-        'Administered enterprise SQL/Oracle databases handling high-volume financial transactions with 99.9% uptime.',
-        'Built automated ETL pipelines processing millions of records daily across distributed data systems.',
-        'Optimized query performance on large-scale data warehouses, reducing execution time by 60%.',
-      ],
-      tags: ['IBM Infosphere', 'SQL', 'Oracle', 'ETL', 'Python'],
-      icon: <Database className="w-6 h-6" />,
-    },
-    {
-      company: 'TGGENCO',
-      role: 'Engineering Intern',
-      period: 'Jan 2021 – Feb 2021',
-      status: 'Completed',
-      desc: 'Analyzed synchronous static generator excitation systems in 815 MW hydropower plant. Optimized efficiency protocols.',
-      contributions: [
-        'Analyzed synchronous static generator excitation systems in an 815 MW hydropower plant.',
-        'Optimized efficiency protocols for power generation systems.',
-        'Documented technical findings and presented recommendations to engineering team.',
-      ],
-      tags: ['Power Systems', 'Data Analysis', 'Engineering'],
-      icon: <Cpu className="w-6 h-6" />,
-    },
-    {
-      company: 'Rutgers – New Brunswick Laureate Program',
-      role: 'AI Data Engineer',
-      period: 'Dec 2025 – Mar 2026',
-      status: 'Completed',
-      desc: 'An interdisciplinary art and science project bringing "botanical ghosts" back into cultural consciousness through critical design.',
-      contributions: [
-        'Co-designed and developed a dedicated digital platform to highlight the Chrysler Herbarium, expanding public recognition of archival botanical work.',
-        'Translated complex ecological loss and scientific data into accessible visual narratives using critical and speculative design frameworks.',
-        'Assisted in exploring ways to use historical language and material explorations to reintroduce vanished ecologies into contemporary culture.',
-      ],
-      tags: ['Data Engineering', 'Machine Learning Pipelines', '3D Reconstruction'],
-      icon: <Cpu className="w-6 h-6" />,
-    },
-  ];
-
-  const projects = [
-    {
-      title: 'Hybrid Edge-Cloud IoT',
-      desc: 'A robust pipeline for IoT data processing using Tesseract OCR and PostgreSQL. Implements edge computing for real-time data ingestion with cloud-based analytics.',
-      tags: ['Python', 'Tesseract', 'PostgreSQL'],
-      icon: <Layers className="w-6 h-6" />,
-      github: 'https://github.com/Kundan265/',
-    },
-    {
-      title: 'E-Commerce Warehouse',
-      desc: 'Scalable ETL processes and data modeling for high-traffic e-commerce platforms. Features star-schema design and automated data quality checks.',
-      tags: ['PostgreSQL', 'ETL', 'Data Modeling'],
-      icon: <Server className="w-6 h-6" />,
-      github: 'https://github.com/Kundan265/',
-    },
-    {
-      title: 'Quadruped Robot',
-      desc: 'Autonomous movement control using Raspberry Pi and Python servo libraries. Implements inverse kinematics for stable walking gaits.',
-      tags: ['Raspberry Pi', 'Python', 'Robotics'],
-      icon: <Cpu className="w-6 h-6" />,
-      github: 'https://github.com/Kundan265/',
-    },
-  ];
-
-  const skills = [
-    {
-      category: 'Languages & Data',
-      icon: <Code className="w-6 h-6" />,
-      items: ['Python', 'SQL', 'C++', 'PostgreSQL', 'NoSQL', 'PL/SQL'],
-    },
-    {
-      category: 'Cloud & DevOps',
-      icon: <Server className="w-6 h-6" />,
-      items: ['Terraform', 'Ansible', 'AWS', 'Docker', 'Linux', 'CI/CD'],
-    },
-    {
-      category: 'Data & Analytics',
-      icon: <Database className="w-6 h-6" />,
-      items: ['Tableau', 'ETL Pipelines', 'Data Modeling', 'Spark', 'Airflow', 'IBM Infosphere'],
-    },
-  ];
-
-  const basePath = import.meta.env.BASE_URL;
-
-  return (
-    <div className="relative min-h-screen bg-[#f8f9fc] text-slate-800 font-sans selection:bg-blue-500/20 overflow-x-hidden">
-
-      {/* Fluid Water Background - fixed behind everything */}
-      <div className="fixed inset-0 z-0 opacity-30 pointer-events-none">
-        <Canvas
-          initialAnimation={{ path: 'wave', options: { maxLoops: Infinity } }}
-          style={{ width: '100%', height: '100%' }}
-        />
-      </div>
-
-      {/* Navigation */}
-      <motion.nav
-        style={{ backgroundColor: navBg }}
-        className="fixed top-0 w-full z-50 backdrop-blur-md border-b border-slate-200/50"
-      >
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.a
-            href="#"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-xl font-bold tracking-tight text-slate-800"
-          >
-            <span className="text-blue-600">&lt;</span>
-            KD
-            <span className="text-blue-600"> /&gt;</span>
-          </motion.a>
-
-          {/* Desktop Nav */}
-          <ul className="hidden md:flex items-center gap-8">
-            {navItems.map((item, i) => (
-              <motion.li
-                key={item}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <a
-                  href={`#${item.toLowerCase()}`}
-                  className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors relative group"
-                >
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300" />
-                </a>
-              </motion.li>
-            ))}
-            <motion.li initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-              <button
-                onClick={() => setShowEmailModal(true)}
-                className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                Contact
-              </button>
-            </motion.li>
-          </ul>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden p-2 text-slate-600"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white/95 backdrop-blur-lg border-t border-slate-200"
-            >
-              <div className="px-6 py-4 space-y-3">
-                {navItems.map((item) => (
-                  <a
-                    key={item}
-                    href={`#${item.toLowerCase()}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block text-slate-700 hover:text-blue-600 font-medium py-2"
-                  >
-                    {item}
-                  </a>
-                ))}
-                <button
-                  onClick={() => { setShowEmailModal(true); setMobileMenuOpen(false); }}
-                  className="w-full px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg"
-                >
-                  Contact
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
-
-      {/* ====== HERO ====== */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center pt-20 px-6">
-        <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="relative z-10"
-          >
-            <p className="text-blue-600 font-medium tracking-wide uppercase text-sm mb-4">
-              Hello! I'm
-            </p>
-            <h1 className="text-5xl md:text-7xl font-bold mb-2 tracking-tight text-slate-900 leading-[1.1]">
-              Kundan
-              <br />
-              <span className="text-blue-600">Kumar Reddy</span>
-            </h1>
-            <p className="text-lg md:text-xl text-slate-500 mt-4 mb-8 leading-relaxed max-w-lg">
-              Computing Engineer & Data Architect. Bridging the gap between
-              distributed systems and complex data infrastructures.
-            </p>
-
-            <div className="flex flex-wrap gap-4 mb-8">
-              <button
-                onClick={() => setShowEmailModal(true)}
-                className="px-7 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 hover:-translate-y-0.5"
-              >
-                Get in Touch
-              </button>
-              <a
-                href={`${basePath}CV_K.pdf`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-7 py-3 border-2 border-slate-300 text-slate-700 font-semibold rounded-lg hover:border-blue-600 hover:text-blue-600 transition-all flex items-center gap-2 hover:-translate-y-0.5"
-              >
-                <FileText size={18} />
-                Download CV
-              </a>
-            </div>
-
-            {/* Social Icons */}
-            <div className="flex gap-4">
-              <a href="https://github.com/Kundan265/" target="_blank" rel="noopener noreferrer"
-                className="p-3 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:border-slate-400 transition-all shadow-sm hover:shadow-md">
-                <Github size={20} />
-              </a>
-              <a href="https://www.linkedin.com/in/kundankrd" target="_blank" rel="noopener noreferrer"
-                className="p-3 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm hover:shadow-md">
-                <Linkedin size={20} />
-              </a>
-              <button
-                onClick={() => setShowEmailModal(true)}
-                className="p-3 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-red-500 hover:border-red-300 transition-all shadow-sm hover:shadow-md">
-                <Mail size={20} />
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Hero Visual - Abstract Tech Graphic */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="relative hidden md:flex items-center justify-center"
-          >
-            <div className="relative w-80 h-80 lg:w-96 lg:h-96">
-              {/* Concentric rings */}
-              {[1, 2, 3, 4].map((ring) => (
-                <motion.div
-                  key={ring}
-                  className="absolute inset-0 rounded-full border border-blue-200/40"
-                  style={{
-                    inset: `${ring * 20}px`,
-                  }}
-                  animate={{ rotate: ring % 2 === 0 ? 360 : -360 }}
-                  transition={{ duration: 20 + ring * 5, repeat: Infinity, ease: 'linear' }}
-                >
-                  <div
-                    className="absolute w-3 h-3 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50"
-                    style={{ top: '0', left: '50%', transform: 'translate(-50%, -50%)' }}
-                  />
-                </motion.div>
-              ))}
-              {/* Center icon */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-xl shadow-blue-500/30">
-                  <Code className="w-10 h-10 text-white" />
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-400"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="text-xs font-medium tracking-widest uppercase">Scroll</span>
-          <ArrowDown size={16} />
-        </motion.div>
-      </section>
-
-      {/* ====== ABOUT ====== */}
-      <motion.section
-        id="about"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        className="relative z-10 py-24 px-6"
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
-            About <span className="text-blue-600">Me</span>
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 rounded mb-8" />
-
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-10 border border-slate-200 shadow-lg">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Background & Focus</h3>
-            <p className="text-slate-600 leading-relaxed mb-4">
-              Data Engineer with 3+ years of experience at Bank of America, building production data
-              systems, scalable infrastructure, and automated pipelines across the full data lifecycle.
-            </p>
-            <p className="text-slate-600 leading-relaxed">
-              Skilled in engineering enterprise-grade ETL pipelines using IBM Infosphere, administering
-              SQL/Oracle databases for high-volume financial transactions, and optimizing data warehouse
-              performance. Passionate about distributed systems, cloud infrastructure (Terraform, AWS),
-              and turning complex data challenges into elegant engineering solutions.
-            </p>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ====== EXPERIENCE ====== */}
-      <motion.section
-        id="experience"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        className="relative z-10 py-24 px-6"
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
-            Professional <span className="text-blue-600">Experience</span>
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 rounded mb-4" />
-          <p className="text-slate-500 mb-12">Click a card to see details</p>
-
-          <div className="space-y-6">
-            {experience.map((exp, idx) => (
-              <motion.div
-                key={idx}
-                custom={idx}
-                variants={cardVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div
-                  onClick={() => setExpandedExp(expandedExp === idx ? null : idx)}
-                  className={`bg-white/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 border cursor-pointer transition-all duration-300 shadow-sm hover:shadow-lg ${
-                    expandedExp === idx
-                      ? 'border-blue-300 shadow-lg shadow-blue-500/5'
-                      : 'border-slate-200 hover:border-blue-200'
-                  }`}
-                >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
-                        {exp.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-900">{exp.role}</h3>
-                        <p className="text-blue-600 font-medium">{exp.company}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-slate-400 text-sm font-mono">{exp.period}</span>
-                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                        exp.status === 'Current'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {exp.status.toUpperCase()}
-                      </span>
-                      <ChevronDown
-                        size={18}
-                        className={`text-slate-400 transition-transform duration-300 ${
-                          expandedExp === idx ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  <AnimatePresence>
-                    {expandedExp === idx && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-6 pt-6 border-t border-slate-100">
-                          <h4 className="font-semibold text-slate-800 mb-3">Key Contributions</h4>
-                          <ul className="space-y-2 mb-6">
-                            {exp.contributions.map((c, i) => (
-                              <li key={i} className="flex items-start gap-2 text-slate-600 text-sm leading-relaxed">
-                                <span className="mt-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />
-                                {c}
-                              </li>
-                            ))}
-                          </ul>
-                          <div className="flex flex-wrap gap-2">
-                            {exp.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-xs font-medium px-3 py-1 bg-blue-50 text-blue-700 rounded-full"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ====== SKILLS ====== */}
-      <motion.section
-        id="skills"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        className="relative z-10 py-24 px-6"
-      >
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
-            Technical <span className="text-blue-600">Skills</span>
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 rounded mb-4" />
-          <p className="text-slate-500 mb-12">Tools, platforms, and languages</p>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {skills.map((group, idx) => (
-              <motion.div
-                key={idx}
-                custom={idx}
-                variants={cardVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-200"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="p-2.5 bg-blue-50 rounded-xl text-blue-600">{group.icon}</div>
-                  <h3 className="font-bold text-slate-900">{group.category}</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <span
-                      key={item}
-                      className="text-sm font-medium px-3 py-1.5 bg-slate-50 text-slate-700 rounded-lg border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ====== PROJECTS ====== */}
-      <motion.section
-        id="projects"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        className="relative z-10 py-24 px-6"
-      >
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
-            Featured <span className="text-blue-600">Projects</span>
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 rounded mb-12" />
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((proj, idx) => (
-              <motion.div
-                key={idx}
-                custom={idx}
-                variants={cardVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                whileHover={{ y: -6 }}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 group hover:border-blue-200"
-              >
-                <div className="flex justify-between items-start mb-5">
-                  <div className="p-3 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-100 transition-colors">
-                    {proj.icon}
-                  </div>
-                  <a
-                    href={proj.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-slate-400 hover:text-slate-700 transition-colors"
-                  >
-                    <ExternalLink size={18} />
-                  </a>
-                </div>
-
-                <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
-                  {proj.title}
-                </h3>
-                <p className="text-sm text-slate-500 mb-5 leading-relaxed">{proj.desc}</p>
-
-                <div className="flex flex-wrap gap-2">
-                  {proj.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs font-medium px-3 py-1 bg-slate-50 text-slate-600 rounded-full border border-slate-200"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ====== CONTACT ====== */}
-      <motion.section
-        id="contact"
-        variants={sectionVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        className="relative z-10 py-24 px-6"
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-slate-900">
-            Get in <span className="text-blue-600">Touch</span>
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 rounded mb-4" />
-          <p className="text-slate-500 mb-12">Open to opportunities</p>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { icon: <Mail size={22} />, label: 'Email', value: 'kundan.k@rutgers.edu', action: () => setShowEmailModal(true) },
-              { icon: <Phone size={22} />, label: 'Phone', value: 'On request', action: null },
-              { icon: <Linkedin size={22} />, label: 'LinkedIn', value: 'kundankrd', action: null, href: 'https://www.linkedin.com/in/kundankrd' },
-              { icon: <MapPin size={22} />, label: 'Location', value: 'United States', action: null },
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                custom={idx}
-                variants={cardVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all text-center cursor-pointer hover:border-blue-200"
-                onClick={item.action || undefined}
-              >
-                {item.href ? (
-                  <a href={item.href} target="_blank" rel="noopener noreferrer" className="block">
-                    <div className="inline-flex p-3 bg-blue-50 rounded-xl text-blue-600 mb-3">
-                      {item.icon}
-                    </div>
-                    <p className="font-semibold text-slate-800 text-sm">{item.label}</p>
-                    <p className="text-slate-500 text-sm mt-1">{item.value}</p>
-                  </a>
-                ) : (
-                  <>
-                    <div className="inline-flex p-3 bg-blue-50 rounded-xl text-blue-600 mb-3">
-                      {item.icon}
-                    </div>
-                    <p className="font-semibold text-slate-800 text-sm">{item.label}</p>
-                    <p className="text-slate-500 text-sm mt-1">{item.value}</p>
-                  </>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ====== FOOTER ====== */}
-      <footer className="relative z-10 py-8 text-center border-t border-slate-200 bg-white/60 backdrop-blur-sm">
-        <p className="text-slate-500 text-sm">
-          Designed & Built by <span className="font-semibold text-slate-700">Kundan Kumar Reddy D</span>
-        </p>
-      </footer>
-
-      {/* ====== EMAIL MODAL ====== */}
-      <AnimatePresence>
-        {showEmailModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
-            onClick={() => setShowEmailModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white p-8 rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowEmailModal(false)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <h3 className="text-2xl font-bold mb-2 text-slate-900">Get in Touch</h3>
-              <p className="text-slate-500 mb-6">Reach me at my university email address.</p>
-
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between gap-4 mb-6">
-                <code className="text-blue-600 font-mono text-sm sm:text-base truncate">
-                  kundan.k@rutgers.edu
-                </code>
-                <button
-                  onClick={handleCopyEmail}
-                  className="p-2 hover:bg-slate-200 rounded-lg text-slate-500 hover:text-slate-700 transition-colors"
-                  title="Copy to clipboard"
-                >
-                  {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
-                </button>
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <a
-                  href="mailto:kundan.k@rutgers.edu"
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors text-sm"
-                >
-                  Send Email
-                </a>
-                <button
-                  onClick={() => setShowEmailModal(false)}
-                  className="px-5 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 font-medium transition-colors text-sm"
-                >
-                  Close
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      for (let lane = 0; lane < (width < 720 ? 18 : 30); lane++) {
+        const points = [];
+        for (let x = -20; x < width + 20; x += 8) {
+          const ratio = x / width;
+          let y = height * (.76 + lane * .008) + Math.sin(ratio * 7 + lane * .085 + time * .3) * height * .13 - Math.pow(ratio, 2) * height * .48;
+          const dx = x - pointer.x,
+            dy = y - pointer.y,
+            distance = Math.hypot(dx, dy);
+          if (distance < 170) y += dy / (distance || 1) * (170 - distance) * .32;
+          points.push([x, y]);
+        }
+        ctx.beginPath();
+        points.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+        ctx.strokeStyle = `rgba(55,219,245,${.07 + lane % 4 * .035})`;
+        ctx.lineWidth = lane % 5 === 0 ? 1.2 : .6;
+        ctx.stroke();
+        for (let dot = 0; dot < 6; dot++) {
+          const i = Math.floor((dot / 6 + time * .035 + lane * .019) % 1 * points.length);
+          const [x, y] = points[i];
+          ctx.beginPath();
+          ctx.arc(x, y, lane % 3 === 0 ? 2 : 1.1, 0, Math.PI * 2);
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = '#52edff';
+          ctx.fillStyle = lane % 4 === 0 ? '#e6ffff' : '#46d9ee';
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      }
+      if (!paused && !reduced && isVisible && !document.hidden) {
+        time += .016;
+        frame = requestAnimationFrame(draw);
+      }
+    }
+    const redraw = () => {
+      cancelAnimationFrame(frame);
+      if (isVisible && !document.hidden) draw();
+    };
+    resize();
+    draw();
+    const observer = new ResizeObserver(() => {
+      resize();
+      redraw();
+    });
+    observer.observe(canvas);
+    const visibility = new IntersectionObserver(entries => {
+      isVisible = entries[0].isIntersecting;
+      redraw();
+    });
+    visibility.observe(canvas);
+    document.addEventListener('visibilitychange', redraw);
+    window.addEventListener('pointermove', move, {
+      passive: true
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      visibility.disconnect();
+      document.removeEventListener('visibilitychange', redraw);
+      window.removeEventListener('pointermove', move);
+    };
+  }, [paused]);
+  return <canvas ref={ref} className="signal-field" aria-hidden="true" />;
+}
+function Processor() {
+  return <div className="processor-scene" aria-hidden="true"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="board">
+    <svg viewBox="0 0 600 600" className="traces"><defs><linearGradient id="trace"><stop stopColor="#24778a" /><stop offset=".5" stopColor="#8bf7ff" /><stop offset="1" stopColor="#33949f" /></linearGradient></defs>
+      {Array.from({
+          length: 12
+        }, (_, i) => {
+          const n = 185 + i * 21;
+          return <g key={i}><path d={`M ${n} 245 V ${150 - i % 3 * 18} L ${n - 65} ${85 - i % 3 * 18} V 25`} /><path d={`M ${n} 355 V ${440 + i % 3 * 18} L ${n + 45} ${485 + i % 3 * 18} V 575`} /><path d={`M 245 ${n} H ${150 - i % 3 * 18} L ${85 - i % 3 * 18} ${n + 55} H 25`} /><path d={`M 355 ${n} H ${440 + i % 3 * 18} L ${485 + i % 3 * 18} ${n - 55} H 575`} /><circle cx={n} cy="25" r="4" /><circle cx="575" cy={n - 55} r="4" /></g>;
+        })}
+    </svg><div className="chip-base"><div className="chip"><Cpu size={42} /><span>KUNDAN</span><small>SYSTEMS / ENGINEERING</small></div></div>
+    <div className="component c1" /><div className="component c2" /><div className="component c3" /><div className="component c4" />
+  </div><span className="scene-label label-top">HARDWARE × SOFTWARE</span><span className="scene-label label-bottom">FROM SIGNAL TO SYSTEM.</span></div>;
+}
+export default function App() {
+  const [menu, setMenu] = useState(false),
+    [paused, setPaused] = useState(false),
+    [filter, setFilter] = useState('All');
+  const nav = ['Work', 'Lab', 'Experience', 'About', 'Contact'];
+  const visible = projects.filter(p => filter === 'All' || p.category === filter);
+  const heroRef = useRef(null);
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(pointer: coarse)').matches) return;
+    const move = e => {
+      const r = hero.getBoundingClientRect();
+      hero.style.setProperty('--pointer-x', `${(e.clientX - r.left) / r.width * 100}%`);
+      hero.style.setProperty('--pointer-y', `${(e.clientY - r.top) / r.height * 100}%`);
+      hero.style.setProperty('--tilt-x', `${((e.clientX - r.left) / r.width - .5) * 7}deg`);
+      hero.style.setProperty('--tilt-y', `${((e.clientY - r.top) / r.height - .5) * -7}deg`);
+    };
+    const reset = () => {
+      hero.style.setProperty('--tilt-x', '0deg');
+      hero.style.setProperty('--tilt-y', '0deg');
+    };
+    hero.addEventListener('pointermove', move, {
+      passive: true
+    });
+    hero.addEventListener('pointerleave', reset);
+    return () => {
+      hero.removeEventListener('pointermove', move);
+      hero.removeEventListener('pointerleave', reset);
+    };
+  }, []);
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        observer.unobserve(e.target);
+      }
+    }), {
+      threshold: .08
+    });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const close = e => {
+      if (e.key === 'Escape') setMenu(false);
+    };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, []);
+  return <div className={paused ? 'app motion-paused' : 'app'}>
+    <a className="skip-link" href="#main">Skip to content</a>
+    <header><a className="brand" href="#home">K<span className="brand-dot">.</span><span className="brand-sub">KUNDAN / ENGINEER</span></a><nav aria-label="Main navigation" className={menu ? 'nav open' : 'nav'}>{nav.map(item => <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenu(false)}>{item}</a>)}<a className="nav-contact" href="mailto:kundan.k@rutgers.edu">Let’s talk</a></nav><button className="menu-toggle icon-button" aria-label={menu ? 'Close menu' : 'Open menu'} aria-expanded={menu} onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</button></header>
+    <main id="main"><section ref={heroRef} id="home" className="hero"><div className="grid-background" /><SignalField paused={paused} /><div className="hero-content"><div className="eyebrow"><span /> DATA. INTELLIGENCE. HARDWARE.</div><p className="intro">Hi, I’m Kundan Kumar Reddy.</p><h1>Intelligence.<br />From data<br /><span>to device.</span></h1><p className="hero-description">From production data systems to intelligent edge devices. I connect software, data, and hardware to build systems that work in the real world.</p><div className="hero-actions"><a className="button primary" href="#work">Explore my work</a><a className="button secondary" href={`${import.meta.env.BASE_URL}CV_K.pdf`} target="_blank" rel="noreferrer"><Download size={16} /> View résumé</a></div><div className="hero-social"><a href="https://github.com/Kundan265" aria-label="GitHub"><Github size={18} /></a><a href="https://www.linkedin.com/in/kundankrd" aria-label="LinkedIn"><Linkedin size={18} /></a><span>M.S. ECE · Rutgers University</span></div></div><Processor /><div className="hero-telemetry" aria-hidden="true"><span>ENGINEERING FOCUS</span><div><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /><i /></div><p>SOFTWARE × HARDWARE</p></div><div className="hero-bottom"><span className="mono">BUILT AT THE INTERSECTION</span><a href="#work">Scroll to explore <span className="scroll-line" /></a><button onClick={() => setPaused(!paused)} className="motion-toggle" aria-pressed={paused}>{paused ? <Play size={13} /> : <Pause size={13} />} {paused ? 'Resume motion' : 'Pause motion'}</button></div></section>
+    <div className="discipline-bar"><span><Database size={18} /> DATA ENGINEERING</span><i>+</i><span><Cpu size={18} /> EDGE INTELLIGENCE</span><i>+</i><span><CircuitBoard size={18} /> EMBEDDED SYSTEMS</span></div>
+    <section id="work" className="section"><div className="section-heading reveal"><div><p className="eyebrow">SELECTED WORK</p><h2>Ideas into<br /><span>working systems.</span></h2></div><p>A few places where software meets the physical world, and data becomes something useful.</p></div><div className="filters" aria-label="Filter projects">{['All', 'Hardware', 'Data systems'].map(f => <button aria-pressed={filter === f} className={filter === f ? 'active' : ''} key={f} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="project-grid">{visible.map(proj => <article className="project" key={proj.title}><div className={`project-art ${proj.title.includes('Robot') ? 'robot' : proj.title.includes('Warehouse') ? 'warehouse' : 'edge'}`}><div className="art-grid" /><ProjectVisual kind={proj.visual} /><span>{proj.tags[0].toUpperCase()} / SYSTEM DESIGN</span></div><div className="project-copy"><div className="tags">{proj.tags.map(t => <span key={t}>{t}</span>)}</div><h3>{proj.title}</h3><p>{proj.desc}</p><details className="project-details"><summary>Inside the system <span>+</span></summary><div><h4>Engineering focus</h4><p>{proj.focus}</p><h4>Architecture sketch</h4><ol>{proj.pipeline.map(stage => <li key={stage}>{stage}</li>)}</ol><p className="architecture-note">Conceptual view based on the project description.</p></div></details></div></article>)}</div></section>
+    <SignalLab />
+    <section id="experience" className="section experience"><div className="section-heading reveal"><div><p className="eyebrow">THE EXPERIENCE BEHIND THE WORK</p><h2>Built on<br /><span>real-world experience.</span></h2></div><p>Production data engineering, interdisciplinary research, and a foundation in electrical engineering.</p></div><div className="timeline">{experience.map(exp => <details className="experience-row reveal" key={exp.company}><summary><span className="period">{exp.period}</span><span className="role"><strong>{exp.role}</strong><span>{exp.company}</span></span><span className="expand">+</span></summary><div className="experience-detail"><p>{exp.desc}</p><ul>{exp.contributions.map(c => <li key={c}>{c}</li>)}</ul><div className="tags">{exp.tags.map(t => <span key={t}>{t}</span>)}</div></div></details>)}</div></section>
+    <section id="about" className="section about"><div className="about-copy reveal"><p className="eyebrow">THE PERSON BEHIND THE SYSTEMS</p><h2>Curiosity, down<br />to the <span>circuit.</span></h2><p>I’m an engineer with more than three years of experience in production data systems in financial services, now pursuing an M.S. in Electrical and Computer Engineering at Rutgers.</p><p>My focus is moving intelligence closer to the physical world: embedded systems, computer vision, and efficient edge computing. I enjoy understanding the whole system—from how data moves to how hardware executes.</p><a className="text-link" href={`${import.meta.env.BASE_URL}CV_K.pdf`} target="_blank" rel="noreferrer">Read my résumé <Download size={16} /></a></div><div className="skill-stack reveal">{skills.map(s => <div className="skill-group" key={s.category}><div>{s.icon}<h3>{s.category}</h3></div><p>{s.items.join(' · ')}</p></div>)}</div></section>
+    <section id="contact" className="section contact reveal"><p className="eyebrow">NEXT CONNECTION</p><h2>Let’s build<br />something <span>that matters.</span></h2><p>Have a challenging problem, a research idea, or an engineering opportunity? I’d love to hear about it.</p><a className="button primary" href="mailto:kundan.k@rutgers.edu"><Mail size={18} /> Get in touch</a><a className="email" href="mailto:kundan.k@rutgers.edu">kundan.k@rutgers.edu</a></section></main><footer><a className="brand" href="#home">K<span className="brand-dot">.</span></a><span>Designed with curiosity. Built by Kundan.</span><div><a href="https://github.com/Kundan265">GitHub</a><a href="https://www.linkedin.com/in/kundankrd">LinkedIn</a></div></footer>
+  </div>;
 }
