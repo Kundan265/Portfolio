@@ -70,7 +70,7 @@ export default function App() {
     <div className="page" id="top">
       <a className="skip-link" href="#content">Skip to content</a>
       <header className="site-header">
-        <a className="site-name" href="#top">Kundan Kumar Reddy</a>
+        <a className="site-name" href="#top">Kundan Digavinti</a>
         <nav aria-label="Main navigation">
           <a href="#work">Work</a>
           <a href="#bench">Workbench</a>
