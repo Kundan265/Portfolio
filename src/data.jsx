@@ -1,73 +1,81 @@
-import { Database, Cpu, Layers, Server, Code } from 'lucide-react';
-export const experience = [{
-  company: 'Bank of America',
-  role: 'Data Engineer',
-  period: 'Sept 2022 – Aug 2025',
-  status: 'Completed',
-  desc: 'Engineered data archiving lifecycles using IBM Infosphere. Administered enterprise SQL/Oracle databases for high-volume transactions.',
-  contributions: ['Engineered data archiving lifecycles using IBM Infosphere for enterprise-scale data management and compliance.', 'Administered enterprise SQL/Oracle databases handling high-volume financial transactions for financial operations.', 'Built automated ETL pipelines for distributed data systems.', 'Optimized query performance on large-scale data warehouses, to improve execution efficiency.'],
-  tags: ['IBM Infosphere', 'SQL', 'Oracle', 'ETL', 'Python'],
-  icon: <Database className="w-6 h-6" />
-}, {
-  company: 'TGGENCO',
-  role: 'Engineering Intern',
-  period: 'Jan 2021 – Feb 2021',
-  status: 'Completed',
-  desc: 'Analyzed synchronous static generator excitation systems in 815 MW hydropower plant. Optimized efficiency protocols.',
-  contributions: ['Analyzed synchronous static generator excitation systems in an 815 MW hydropower plant.', 'Optimized efficiency protocols for power generation systems.', 'Documented technical findings and presented recommendations to engineering team.'],
-  tags: ['Power Systems', 'Data Analysis', 'Engineering'],
-  icon: <Cpu className="w-6 h-6" />
-}, {
-  company: 'Rutgers – New Brunswick Laureate Program',
-  role: 'AI Data Engineer',
-  period: 'Dec 2025 – Mar 2026',
-  status: 'Completed',
-  desc: 'An interdisciplinary art and science project bringing "botanical ghosts" back into cultural consciousness through critical design.',
-  contributions: ['Co-designed and developed a dedicated digital platform to highlight the Chrysler Herbarium, expanding public recognition of archival botanical work.', 'Translated complex ecological loss and scientific data into accessible visual narratives using critical and speculative design frameworks.', 'Assisted in exploring ways to use historical language and material explorations to reintroduce vanished ecologies into contemporary culture.'],
-  tags: ['Data Engineering', 'Machine Learning Pipelines', '3D Reconstruction'],
-  icon: <Cpu className="w-6 h-6" />
-}];
-export const projects = [{
-  title: 'Hybrid Edge-Cloud IoT',
-  category: 'Data systems',
-  visual: 'edge',
-  focus: 'Connecting OCR-based ingestion with structured storage and downstream analytics across the edge–cloud boundary.',
-  pipeline: ['Capture input at the edge', 'Extract text with Tesseract OCR', 'Structure records in PostgreSQL', 'Use stored data for cloud analytics'],
-  desc: 'A robust pipeline for IoT data processing using Tesseract OCR and PostgreSQL. Implements edge computing for real-time data ingestion with cloud-based analytics.',
-  tags: ['Python', 'Tesseract', 'PostgreSQL'],
-  icon: <Layers className="w-6 h-6" />,
-  github: 'https://github.com/Kundan265/'
-}, {
-  title: 'E-Commerce Warehouse',
-  category: 'Data systems',
-  visual: 'warehouse',
-  focus: 'Making source data useful through ETL, dimensional modeling, and explicit data quality checks.',
-  pipeline: ['Ingest source records', 'Transform and validate data', 'Load a PostgreSQL star schema', 'Query structured data for analysis'],
-  desc: 'Scalable ETL processes and data modeling for high-traffic e-commerce platforms. Features star-schema design and automated data quality checks.',
-  tags: ['PostgreSQL', 'ETL', 'Data Modeling'],
-  icon: <Server className="w-6 h-6" />,
-  github: 'https://github.com/Kundan265/'
-}, {
-  title: 'Quadruped Robot',
-  category: 'Hardware',
-  visual: 'robot',
-  focus: 'Translating a desired walking gait into joint movements through inverse kinematics and Raspberry Pi control.',
-  pipeline: ['Define the walking gait', 'Compute joint angles with inverse kinematics', 'Issue servo commands from Raspberry Pi', 'Produce coordinated leg movement'],
-  desc: 'Autonomous movement control using Raspberry Pi and Python servo libraries. Implements inverse kinematics for stable walking gaits.',
-  tags: ['Raspberry Pi', 'Python', 'Robotics'],
-  icon: <Cpu className="w-6 h-6" />,
-  github: 'https://github.com/Kundan265/'
-}];
-export const skills = [{
-  category: 'Languages & Data',
-  icon: <Code className="w-6 h-6" />,
-  items: ['Python', 'SQL', 'C++', 'PostgreSQL', 'NoSQL', 'PL/SQL']
-}, {
-  category: 'Cloud & DevOps',
-  icon: <Server className="w-6 h-6" />,
-  items: ['Terraform', 'Ansible', 'AWS', 'Docker', 'Linux', 'CI/CD']
-}, {
-  category: 'Data & Analytics',
-  icon: <Database className="w-6 h-6" />,
-  items: ['Tableau', 'ETL Pipelines', 'Data Modeling', 'Spark', 'Airflow', 'IBM Infosphere']
-}];
+const github = 'https://github.com/Kundan265/';
+
+export const featured = {
+  title: 'Vision-guided quadruped',
+  period: '2021–2022',
+  summary: 'A 12-servo robot built by a two-person team. I worked on Raspberry Pi gait control and connected a live person detector to the robot’s motion system.',
+  notes: [
+    {
+      title: 'Getting the legs to walk',
+      detail: 'We used inverse kinematics to turn desired foot positions into joint angles. The gait controller used those angles to coordinate 12 servos for walking, turning, and standing.',
+    },
+    {
+      title: 'Connecting vision to motion',
+      detail: 'A threaded YOLO detector ran through NCNN on live camera frames. We sent detection output to the motion controller over a serial connection.',
+    },
+    {
+      title: 'Testing the handoffs',
+      detail: 'We tested and debugged the full path from camera capture and inference through serial communication, gait control, and servo actuation.',
+    },
+  ],
+};
+
+export const projects = [
+  {
+    title: 'Edge-to-cloud image processing',
+    category: 'Computer vision',
+    summary: 'Built a pipeline that takes images from IoT devices, extracts text with Tesseract, and routes the processed output to PostgreSQL and MongoDB.',
+    url: github + 'hybrid-iot-ocr-to-audio_pipeline',
+  },
+  {
+    title: '3D spatial-index benchmarks',
+    category: 'Systems measurement',
+    summary: 'Compared k-d trees, octrees, and sparse voxel octrees across seven data scales and five point distributions. Measured build time, memory use, and query latency.',
+    url: github + 'Spatial-Indexing_edge-device',
+  },
+  {
+    title: 'Operational demand forecasting',
+    category: 'Machine learning',
+    summary: 'Used synthetic weekly demand data to compare naive baselines, Ridge regression, and gradient boosting with rolling-origin evaluation and a final holdout.',
+    url: github + 'data_forcasting',
+  },
+  {
+    title: 'Food-delivery data warehouse',
+    category: 'Data engineering',
+    summary: 'Designed a PostgreSQL star schema and ETL workflow with data quality checks to make raw food-delivery records ready for SQL analysis.',
+    url: github + 'food-delivery_data-warehouse',
+  },
+];
+
+export const experience = [
+  {
+    role: 'Teaching Assistant, Electrical and Computer Engineering',
+    organization: 'Rutgers University',
+    period: 'Sept 2026–Present',
+    detail: 'Grade assessments and give technical feedback on circuit analysis, op-amps, and transistor circuits. Coordinate with instructors and other TAs on grading consistency.',
+  },
+  {
+    role: 'Business Intelligence Engineer Intern',
+    organization: 'Psiog Digital',
+    period: 'June–July 2026',
+    detail: 'Cleaned and modeled internal business data for Power BI dashboards and published dashboards through Azure.',
+  },
+  {
+    role: 'Coadjutant, AI Pipeline Development',
+    organization: 'Rutgers Laureate Project',
+    period: 'Dec 2025–Mar 2026',
+    detail: 'Built a workflow that combined NLP, computer vision, and TripoSR to turn botanical descriptions into 3D assets.',
+  },
+  {
+    role: 'Technical Analyst II, Data Systems and Automation',
+    organization: 'Bank of America',
+    period: 'Sept 2022–Aug 2025',
+    detail: 'Implemented IBM Optim archiving workflows for financial data in SQL Server and Oracle. Supported database migrations and automated recurring monitoring and configuration tasks.',
+  },
+  {
+    role: 'Engineering Intern',
+    organization: 'Telangana Power Generation Corporation',
+    period: 'Jan–Feb 2021',
+    detail: 'Analyzed synchronous generator excitation systems in a hydropower plant during maintenance and troubleshooting.',
+  },
+];
